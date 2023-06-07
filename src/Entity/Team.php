@@ -5,6 +5,9 @@ namespace App\Entity;
 use App\Repository\TeamRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\Player;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
 class Team
@@ -26,10 +29,8 @@ class Team
     #[ORM\Column(type: Types::BIGINT)]
     private ?string $money = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Player::class, mappedBy="team")
-     */
-    private Collection $players;
+    #[ORM\OneToMany(targetEntity: Player::class, mappedBy: 'team')]
+    private $players;
 
     public function __construct()
     {

@@ -25,8 +25,10 @@ class PlayerController extends AbstractController
             $data[] = [
                 'id' => $player->getId(),
                 'name' => $player->getName(),
-                'position' => $player->getPosition(),
+                'surname' => $player->getSurname(),
+                'country' => $player->getCountry(),
                 'age' => $player->getAge(),
+                'value' => $player->getValue(),
                 'team_id' => $player->getTeam() ? $player->getTeam()->getId() : null,
             ];
         }
@@ -41,11 +43,16 @@ class PlayerController extends AbstractController
   
         $player = new Player();
         $player->setName($request->request->get('name'));
-        $player->setPosition($request->request->get('position'));
+        $player->setSurname($request->request->get('surname'));
+        $player->setCountry($request->request->get('country'));
         $player->setAge($request->request->get('age'));
+        $player->setValue($request->request->get('value'));
   
         if ($request->request->has('team_id')) {
             $team = $entityManager->getRepository(Team::class)->find($request->request->get('team_id'));
+            if (!$team) {
+                return $this->json('Team not found for id ' . $request->request->get('team_id'), 404);
+            }
             $player->setTeam($team);
         }
   
@@ -55,7 +62,7 @@ class PlayerController extends AbstractController
         return $this->json('Created new player successfully with id ' . $player->getId());
     }
 
-    #[Route('/player', name: 'player_show', methods:'POST')]
+    #[Route('/player/{id}', name: 'player_show', methods:'GET')]
     public function show(int $id, PersistenceManagerRegistry $doctrine): Response
     {
         $player = $doctrine
@@ -69,8 +76,10 @@ class PlayerController extends AbstractController
         $data = [
             'id' => $player->getId(),
             'name' => $player->getName(),
-            'position' => $player->getPosition(),
+            'surname' => $player->getSurname(),
+            'country' => $player->getCountry(),
             'age' => $player->getAge(),
+            'value' => $player->getValue(),
             'team_id' => $player->getTeam() ? $player->getTeam()->getId() : null,
         ];
           
@@ -92,11 +101,17 @@ class PlayerController extends AbstractController
         if (isset($content->name)) {
             $player->setName($content->name);
         }
-        if (isset($content->position)) {
-            $player->setPosition($content->position);
+        if (isset($content->surname)) {
+            $player->setSurname($content->surname);
+        }
+        if (isset($content->country)) {
+            $player->setCountry($content->country);
         }
         if (isset($content->age)) {
             $player->setAge($content->age);
+        }
+        if (isset($content->value)) {
+            $player->setValue($content->value);
         }
         if (isset($content->team_id)) {
             $team = $entityManager->getRepository(Team::class)->find($content->team_id);
@@ -108,8 +123,10 @@ class PlayerController extends AbstractController
         $data = [
             'id' => $player->getId(),
             'name' => $player->getName(),
-            'position' => $player->getPosition(),
+            'surname' => $player->getSurname(),
+            'country' => $player->getCountry(),
             'age' => $player->getAge(),
+            'value' => $player->getValue(),
             'team_id' => $player->getTeam() ? $player->getTeam()->getId() : null,
         ];
           

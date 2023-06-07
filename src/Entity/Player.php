@@ -33,6 +33,7 @@ class Player
      * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="players")
      * @ORM\JoinColumn(name="team_id", referencedColumnName="id", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: Team::class, inversedBy: 'players')]
     private ?Team $team;
 
     public function getId(): ?int
