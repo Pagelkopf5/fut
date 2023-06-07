@@ -125,5 +125,4 @@ class TeamController extends AbstractController
   
         return $this->json('Deleted a team successfully with id ' . $id);
     }
-      
 }
