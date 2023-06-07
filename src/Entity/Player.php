@@ -29,8 +29,11 @@ class Player
     #[ORM\Column(type: Types::BIGINT)]
     private ?string $value = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $team_id = null;
+    /**
+     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="players")
+     * @ORM\JoinColumn(name="team_id", referencedColumnName="id", nullable=true)
+     */
+    private ?Team $team;
 
     public function getId(): ?int
     {
@@ -97,14 +100,14 @@ class Player
         return $this;
     }
 
-    public function getTeamId(): ?int
+    public function getTeam(): ?Team
     {
-        return $this->team_id;
+        return $this->team;
     }
 
-    public function setTeamId(?int $team_id): self
+    public function setTeam(?Team $team): self
     {
-        $this->team_id = $team_id;
+        $this->team = $team;
 
         return $this;
     }

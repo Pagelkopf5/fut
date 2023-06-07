@@ -21,15 +21,15 @@ class TeamController extends AbstractController
         $data = [];
   
         foreach ($teams as $team) {
-           $data[] = [
-               'id' => $team->getId(),
-               'logo' => $team->getLogo(),
-               'name' => $team->getName(),
-               'money' => $team->getMoney(),
-               'country' => $team->getCountry(),
-           ];
+            $data[] = [
+                'id' => $team->getId(),
+                'logo' => $team->getLogo(),
+                'name' => $team->getName(),
+                'money' => $team->getMoney(),
+                'country' => $team->getCountry(),
+            ];
         }
-  
+
         return $this->json($data);
     }
 
@@ -37,13 +37,13 @@ class TeamController extends AbstractController
     public function new(Request $request, PersistenceManagerRegistry $doctrine): Response
     {
         $entityManager = $doctrine->getManager();
-  
+
         $team = new Team();
         $team->setLogo($request->request->get('logo'));
         $team->setName($request->request->get('name'));
-        $team->setMoney($request->request->get('money'));
+        $team->setMoney((int) $request->request->get('money'));
         $team->setCountry($request->request->get('country'));
-  
+
         $entityManager->persist($team);
         $entityManager->flush();
 
@@ -56,20 +56,19 @@ class TeamController extends AbstractController
         $team = $doctrine
             ->getRepository(Team::class)
             ->find($id);
-  
+
         if (!$team) {
-  
-            return $this->json('No team found for id' . $id, 404);
+            return $this->json('No team found for id ' . $id, 404);
         }
-  
-        $data =  [
+
+        $data = [
             'id' => $team->getId(),
             'logo' => $team->getLogo(),
             'name' => $team->getName(),
             'money' => $team->getMoney(),
             'country' => $team->getCountry(),
         ];
-          
+
         return $this->json($data);
     }
 
@@ -80,33 +79,35 @@ class TeamController extends AbstractController
         $team = $entityManager->getRepository(Team::class)->find($id);
   
         if (!$team) {
-            return $this->json('No team found for id' . $id, 404);
+            return $this->json('No team found for id ' . $id, 404);
         }
         
         $content = json_decode($request->getContent());
         
-        if(isset($content->logo)){
+        if (isset($content->logo)) {
             $team->setLogo($content->logo);
         }
-        if(isset($content->name)){
+
+        if (isset($content->name)) {
             $team->setName($content->name);
         }
-        if(isset($content->money)){
-            $team->setMoney($content->money);
+        if (isset($content->money)) {
+            $team->setMoney((int) $content->money);
         }
-        if(isset($content->country)){
+
+        if (isset($content->country)) {
             $team->setCountry($content->country);
         }
         $entityManager->flush();
   
-        $data =  [
+        $data = [
             'id' => $team->getId(),
             'logo' => $team->getLogo(),
             'name' => $team->getName(),
             'money' => $team->getMoney(),
             'country' => $team->getCountry(),
         ];
-          
+
         return $this->json($data);
     }
 
@@ -117,7 +118,7 @@ class TeamController extends AbstractController
         $team = $entityManager->getRepository(Team::class)->find($id);
   
         if (!$team) {
-            return $this->json('No team found for id' . $id, 404);
+            return $this->json('No team found for id ' . $id, 404);
         }
   
         $entityManager->remove($team);

@@ -13,11 +13,17 @@ class Offer
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $team_id = null;
+    /**
+     * @ORM\ManyToOne(targetEntity=Team::class)
+     * @ORM\JoinColumn(name="team_id", referencedColumnName="id")
+     */
+    private ?Team $team;
 
-    #[ORM\Column]
-    private ?int $player_id = null;
+    /**
+     * @ORM\ManyToOne(targetEntity=Player::class)
+     * @ORM\JoinColumn(name="player_id", referencedColumnName="id")
+     */
+    private ?Player $player;
 
     #[ORM\Column]
     private ?int $value = null;
@@ -30,26 +36,26 @@ class Offer
         return $this->id;
     }
 
-    public function getTeamId(): ?int
+    public function getTeam(): ?Team
     {
-        return $this->team_id;
+        return $this->team;
     }
 
-    public function setTeamId(int $team_id): self
+    public function setTeam(?Team $team): self
     {
-        $this->team_id = $team_id;
+        $this->team = $team;
 
         return $this;
     }
 
-    public function getPlayerId(): ?int
+    public function getPlayer(): ?Player
     {
-        return $this->player_id;
+        return $this->player;
     }
 
-    public function setPlayerId(int $player_id): self
+    public function setPlayer(?Player $player): self
     {
-        $this->player_id = $player_id;
+        $this->player = $player;
 
         return $this;
     }

@@ -26,6 +26,16 @@ class Team
     #[ORM\Column(type: Types::BIGINT)]
     private ?string $money = null;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Player::class, mappedBy="team")
+     */
+    private Collection $players;
+
+    public function __construct()
+    {
+        $this->players = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +85,33 @@ class Team
     public function setMoney(string $money): self
     {
         $this->money = $money;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Player[]
+     */
+    public function getPlayers(): Collection
+    {
+        return $this->players;
+    }
+
+    public function addPlayer(Player $player): self
+    {
+        if (!$this->players->contains($player)) {
+            $this->players[] = $player;
+            $player->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlayer(Player $player): self
+    {
+        if ($this->players->removeElement($player) && $player->getTeam() === $this) {
+            $player->setTeam(null);
+        }
 
         return $this;
     }
