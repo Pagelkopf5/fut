@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Offer;
+use App\Entity\Team;
+use App\Entity\Player;
 
 class OfferController extends AbstractController
 {
@@ -21,13 +23,13 @@ class OfferController extends AbstractController
         $data = [];
   
         foreach ($offers as $offer) {
-           $data[] = [
-               'id' => $offer->getId(),
-               'team_id' => $offer->getTeamId(),
-               'player_id' => $offer->getPlayerID(),
-               'value' => $offer->getValue(),
-               'status' => $offer->getStatus(),
-           ];
+            $data[] = [
+                'id' => $offer->getId(),
+                'team_id' => $offer->getTeam()->getId(),
+                'player_id' => $offer->getPlayer()->getId(),
+                'value' => $offer->getValue(),
+                'status' => $offer->getStatus(),
+            ];
         }
   
         return $this->json($data);
@@ -38,9 +40,12 @@ class OfferController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
   
+        $team = $entityManager->getRepository(Team::class)->find($request->request->get('team_id'));
+        $player = $entityManager->getRepository(Player::class)->find($request->request->get('player_id'));
+
         $offer = new Offer();
-        $offer->setTeamId($request->request->get('team_id'));
-        $offer->setPlayerID($request->request->get('player_id'));
+        $offer->setTeam($team);
+        $offer->setPlayer($player);
         $offer->setValue($request->request->get('value'));
         $offer->setStatus($request->request->get('status'));
   
@@ -50,7 +55,7 @@ class OfferController extends AbstractController
         return $this->json('Created new offer successfully with id ' . $offer->getId());
     }
 
-    #[Route('/offer', name: 'offer_edit', methods:'POST')]
+    #[Route('/offer', name: 'offer_show', methods:'POST')]
     public function show(int $id, PersistenceManagerRegistry $doctrine): Response
     {
         $offer = $doctrine
@@ -58,14 +63,13 @@ class OfferController extends AbstractController
             ->find($id);
   
         if (!$offer) {
-  
             return $this->json('No offer found for id' . $id, 404);
         }
   
-        $data =  [
+        $data = [
             'id' => $offer->getId(),
-            'team_id' => $offer->getTeamId(),
-            'player_id' => $offer->getPlayerId(),
+            'team_id' => $offer->getTeam()->getId(),
+            'player_id' => $offer->getPlayer()->getId(),
             'value' => $offer->getValue(),
             'status' => $offer->getStatus(),
         ];
@@ -85,24 +89,27 @@ class OfferController extends AbstractController
         
         $content = json_decode($request->getContent());
         
-        if(isset($content->team_id)){
-            $offer->setTeamId($content->team_id);
+        if (isset($content->team_id)) {
+            $team = $entityManager->getRepository(Team::class)->find($content->team_id);
+            $offer->setTeam($team);
         }
-        if(isset($content->player_id)){
-            $offer->setPlayerId($content->player_id);
+        if (isset($content->player_id)) {
+            $player = $entityManager->getRepository(Player::class)->find($content->player_id);
+            $offer->setPlayer($player);
         }
-        if(isset($content->value)){
+        if (isset($content->value)) {
             $offer->setValue($content->value);
         }
-        if(isset($content->status)){
+        if (isset($content->status)) {
             $offer->setStatus($content->status);
         }
+
         $entityManager->flush();
   
-        $data =  [
+        $data = [
             'id' => $offer->getId(),
-            'team_id' => $offer->getTeamId(),
-            'player_id' => $offer->getPlayerID(),
+            'team_id' => $offer->getTeam()->getId(),
+            'player_id' => $offer->getPlayer()->getId(),
             'value' => $offer->getValue(),
             'status' => $offer->getStatus(),
         ];
@@ -123,6 +130,6 @@ class OfferController extends AbstractController
         $entityManager->remove($offer);
         $entityManager->flush();
   
-        return $this->json('Deleted a offer successfully with id ' . $id);
+        return $this->json('Deleted an offer successfully with id ' . $id);
     }
 }
