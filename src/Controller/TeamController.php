@@ -30,7 +30,6 @@ class TeamController extends AbstractController
            ];
         }
   
-        return $this->json('index ');
         return $this->json($data);
     }
 
@@ -86,21 +85,19 @@ class TeamController extends AbstractController
         
         $content = json_decode($request->getContent());
         
-        if($content->logo){
+        if(isset($content->logo)){
             $team->setLogo($content->logo);
         }
-        if($content->name){
+        if(isset($content->name)){
             $team->setName($content->name);
         }
-        if($content->money){
+        if(isset($content->money)){
             $team->setMoney($content->money);
         }
-        if($content->country){
+        if(isset($content->country)){
             $team->setCountry($content->country);
         }
-        if($content->logo){
-            $entityManager->flush();
-        }
+        $entityManager->flush();
   
         $data =  [
             'id' => $team->getId(),
@@ -113,7 +110,7 @@ class TeamController extends AbstractController
         return $this->json($data);
     }
 
-    #[Route('/team/{id}', name: 'team_edit', methods:'DELETE')]
+    #[Route('/team/{id}', name: 'team_delete', methods:'DELETE')]
     public function delete(int $id, PersistenceManagerRegistry $doctrine): Response
     {
         $entityManager = $doctrine->getManager();
